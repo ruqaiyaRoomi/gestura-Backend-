@@ -2,6 +2,9 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
+RUN which python3 || echo "NO PYTHON3"
+RUN python3 --version || echo "BROKEN PYTHON3"
+
 RUN apt-get update && apt-get install -y \
 python3 \
 python3-pip \
