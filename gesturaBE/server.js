@@ -6,10 +6,7 @@ const {spawn} = require("child_process")
 const cors = require('cors')
 var path = require("path");
 
-const app = express();
-
-app.use(cors())
-app.use(express.json());
+const app = express()
 app.set("port", 3000);
 
 
@@ -20,7 +17,7 @@ app.use(cors({
 }))
 
 app.use(express.json())
-app.options("*", cors())
+
 
 
 const pythonProcess = spawn('python3' , ['src/predict_api.py'])
