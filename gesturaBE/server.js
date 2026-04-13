@@ -3,20 +3,27 @@ const MongoClient = require("mongodb").MongoClient;
 const ObjectID = require("mongodb").ObjectID;
 var fs = require("fs");
 const {spawn} = require("child_process")
-
-
-var path = require("path");
-const app = express();
 const cors = require('cors')
+var path = require("path");
 
-const pythonProcess = spawn('python3' , ['src/predict_api.py'])
-let pendingResolve = null
 
 app.use(cors())
 app.use(express.json());
 app.set("port", 3000);
+const app = express();
+
+app.use(cors({
+  origin: "https://gestura-frontend-artga5ihq-ruqaiyaroomis-projects.vercel.app",
+  methods: ["GET", "POST","OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}))
+
+app.use(express.json())
+app.options("*", cors())
 
 
+const pythonProcess = spawn('python3' , ['src/predict_api.py'])
+let pendingResolve = null
 
 
 const uri = "mongodb+srv://ruqaiyah:RR1026@ug.9ogfhhl.mongodb.net/?appName=UG";
