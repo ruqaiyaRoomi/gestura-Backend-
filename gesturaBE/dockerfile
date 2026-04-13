@@ -15,7 +15,9 @@ COPY package.json  package-lock.json ./
 RUN npm ci
 
 COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
+RUN python3 -m venv .venv
+RUN .venv/bin/pip install --upgrade pip
+RUN .venv/bin/pip install -r requirements.txt
 
 COPY . .
 CMD ["node", "server.js"]
