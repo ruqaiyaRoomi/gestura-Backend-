@@ -14,20 +14,14 @@ let pendingResolve = null
 app.use(express.json());
 app.set("port", 3000);
 
-// CORS set up
-app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "true");
-  res.setHeader("Access-Control-Allow-Credentials", "true");
-  res.setHeader("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+const cors = require('cors')
 
-  if (req.method === "OPTIONS") {
-    return res.status(200).end()
-  }
-  
-
-  next();
-});
+app.use(cors({
+  origin:'https://gestura-frontend-artga5ihq-ruqaiyaroomis-projects.vercel.app',
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type'],
+  credentials: true
+}))
 
 
 const uri = "mongodb+srv://ruqaiyah:RR1026@ug.9ogfhhl.mongodb.net/?appName=UG";
