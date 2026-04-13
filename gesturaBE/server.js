@@ -8,8 +8,8 @@ const {spawn} = require("child_process")
 var path = require("path");
 const app = express();
 
-const pythonProcess = spawn('python', ['src/predict_api.py'])
-let pendingReslove = null
+const pythonProcess = spawn('python3', ['src/predict_api.py'])
+let pendingResolve = null
 
 app.use(express.json());
 app.set("port", 3000);
@@ -282,13 +282,13 @@ async function getHistory(request, response) {
 
 
 pythonProcess.stdout.on('data', (data) => {
-  if(pendingReslove) {
+  if(pendingResolve) {
     try{
-      pendingReslove(JSON.parse(data.toString()))
+      pendingResolve(JSON.parse(data.toString()))
     } catch (e){
-      pendingReslove({err: 'parse errror'})
+      pendingResolve({err: 'parse errror'})
     }
-    pendingReslove = null
+    pendingResolve = null
   }
 })
 
@@ -301,24 +301,9 @@ let isProcessing = false
 
 function predictLandmarks(landmarks, is_left) {
   return new Promise((resolve) => {
-    queue.push({landmarks, is_left, resolve})
-    processQueue()
+    pendingResolve = resolve
+    pythonProcess.stdin.write(JSON.stringify({ landmarks, is_left}) + '\n')
   })
-}
-
-function processQueue() {
-  if( isProcessing || queue.length ==0) return
-
-  isProcessing = true
-  const {landmarks, is_left, resolve} = queue.shift()
-
-  pendingReslove = (results) => {
-    resolve(results)
-    isProcessing = false
-    processQueue()
-  }
-
-  pythonProcess.stdin.write(JSON.stringify({ landmarks, is_left}) + '\n')
 }
 
 async function prediction(request, response) {
