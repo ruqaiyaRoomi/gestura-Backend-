@@ -10,15 +10,11 @@ const app = express()
 app.set("port", 3000);
 
 
-app.use(cors({
-  origin: "https://gestura-frontend-artga5ihq-ruqaiyaroomis-projects.vercel.app",
-  methods: ["GET", "POST","OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"]
-}))
-
-app.use(express.json())
-
-
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*")
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+  next()
+})
 
 const pythonProcess = spawn('python3' , ['src/predict_api.py'])
 let pendingResolve = null
