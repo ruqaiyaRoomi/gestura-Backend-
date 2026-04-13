@@ -8,7 +8,7 @@ const {spawn} = require("child_process")
 var path = require("path");
 const app = express();
 
-const pythonProcess = spawn(process.platform === 'win32' ? '.venv/Scripts/python' : '.venv/bin/python', ['src/predict_api.py'])
+const pythonProcess = spawn('.venv/bin/python', ['src/predict_api.py'])
 let pendingResolve = null
 
 app.use(express.json());

@@ -3,4 +3,5 @@
 nixPkgs = ["python311", "nodejs", "python311Packages.pip"]
 
 [phases.install]
-cmds = ["npm ci", "python3 -m venv .venv", ". .venv/bin/activate", "pip install --upgrade pip", "pip install -r requirements.txt" ]
+cmds = ["npm ci", "python3 -m venv .venv", 
+".venv/bin/pip install -r requirements.txt" ]
