@@ -7,16 +7,17 @@ const {spawn} = require("child_process")
 
 var path = require("path");
 const app = express();
+const cors = require('cors')
 
 const pythonProcess = spawn('python3' , ['src/predict_api.py'])
 let pendingResolve = null
 
+app.use(cors())
 app.use(express.json());
 app.set("port", 3000);
 
-const cors = require('cors')
 
-app.use(cors())
+
 
 const uri = "mongodb+srv://ruqaiyah:RR1026@ug.9ogfhhl.mongodb.net/?appName=UG";
 const client = new MongoClient(uri);
