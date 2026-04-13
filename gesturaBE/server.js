@@ -16,6 +16,8 @@ app.use((req, res, next) => {
   next()
 })
 
+app.use(express.json())
+
 const pythonProcess = spawn('python3' , ['src/predict_api.py'])
 let pendingResolve = null
 
