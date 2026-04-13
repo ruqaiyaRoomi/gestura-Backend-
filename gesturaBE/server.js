@@ -6,11 +6,12 @@ const {spawn} = require("child_process")
 const cors = require('cors')
 var path = require("path");
 
+const app = express();
 
 app.use(cors())
 app.use(express.json());
 app.set("port", 3000);
-const app = express();
+
 
 app.use(cors({
   origin: "https://gestura-frontend-artga5ihq-ruqaiyaroomis-projects.vercel.app",
