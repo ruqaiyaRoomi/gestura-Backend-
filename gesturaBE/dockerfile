@@ -4,6 +4,7 @@ WORKDIR /app
 
 RUN which python3 || echo "NO PYTHON3"
 RUN python3 --version || echo "BROKEN PYTHON3"
+RUN ls-l /usr/bin/python*
 
 RUN apt-get update && apt-get install -y \
 python3 \
