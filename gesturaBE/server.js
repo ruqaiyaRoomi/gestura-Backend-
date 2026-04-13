@@ -303,6 +303,10 @@ function predictLandmarks(landmarks, is_left) {
 }
 
 async function prediction(request, response) {
+
+  if(!request.body || !request.body.landmarks) {
+    return response.status(400).json({ error: 'no landmarks provided'})
+  }
   const { landmarks, is_left} = request.body
 
   try{
