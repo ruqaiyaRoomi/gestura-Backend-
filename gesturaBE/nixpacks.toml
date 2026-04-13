@@ -1,6 +1,6 @@
 [phases.setup]
 
-nixPkgs = ["python311", "nodejs", "python311Packages.numpy", "python311Packages.tensorflow", "python311Packages.pip"]
+nixPkgs = ["python311", "nodejs", "python311Packages.pip"]
 
 [phases.install]
-cmds = ["npm ci", "pip install -r requirements.txt"]
+cmds = ["npm ci", "python3 -m venv .venv", ". .venv/bin/activate", "pip install --upgrade pip", "pip install -r requirements.txt" ]
