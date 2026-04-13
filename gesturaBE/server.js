@@ -17,7 +17,6 @@ app.set("port", 3000);
 const cors = require('cors')
 
 app.use(cors())
-app.options("*", cors())
 
 const uri = "mongodb+srv://ruqaiyah:RR1026@ug.9ogfhhl.mongodb.net/?appName=UG";
 const client = new MongoClient(uri);
