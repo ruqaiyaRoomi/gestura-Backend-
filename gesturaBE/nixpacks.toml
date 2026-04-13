@@ -1,6 +1,6 @@
 [phases.setup]
 
-nixPkgs = ["python311", "nodejs"]
+nixPkgs = ["python311", "nodejs", "python311Packages.numpy", "python311Packages.tensorflow"]
 
 [phases.install]
-cmds = ["npm ci", "python3.11 -m pip install --break-system-packages -r requirements.txt"]
+cmds = ["npm ci"]
