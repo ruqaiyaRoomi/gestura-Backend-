@@ -296,11 +296,29 @@ pythonProcess.stderr.on('data', (data) => {
   console.error('Python error: ', data.toString())
 })
 
+const queue = []
+let isProcessing = false
+
 function predictLandmarks(landmarks, is_left) {
   return new Promise((resolve) => {
-    pendingReslove = resolve
-    pythonProcess.stdin.write(JSON.stringify({ landmarks, is_left}) + '\n')
+    queue.push({landmarks, is_left, resolve})
+    processQueue()
   })
+}
+
+function processQueue() {
+  if( isProcessing || queue.length ==0) return
+
+  isProcessing = true
+  const {landmarks, is_left, resolve} = queue.shift()
+
+  pendingReslove = (results) => {
+    resolve(results)
+    isProcessing = false
+    processQueue()
+  }
+
+  pythonProcess.stdin.write(JSON.stringify({ landmarks, is_left}) + '\n')
 }
 
 async function prediction(request, response) {
