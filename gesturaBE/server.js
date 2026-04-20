@@ -40,6 +40,10 @@ app.post('/gestura/predict', prediction)
 app.post('/gestura/userStats', postUserStats)
 app.get('/gestura/userStats/:userId', getUserStats)
 
+
+app.delete('/gestura/user/:userId', deleteUser)
+app.delete('/gestura/userStats/:userId', deleteUserStats)
+
  
 async function startServer() {
   try {
@@ -263,6 +267,31 @@ async function getUserStats(request, response) {
     response.status(500).json({message: 'server error'})
   }
   
+}
+
+async function deleteUser(request, response) {
+  const {userId} = request.params
+
+  try{
+    const userCollection = db.collection('userInfo')
+    const statsCollection = db.collection('userStats')
+    const quizCollection = db.collection('quizHistory')
+
+    await userCollection.deleteOne({_id: new ObjectID(userId)})
+    await statsCollection.deleteOne({userId})
+    await quizCollection.deleteMany({userId})
+
+    response.json({
+      deleted: true,
+      message: 'Account delete successfully'
+    })
+  } catch(err) {
+    console.error('Error deleting user', err)
+    response.status(500).json({
+      delete: false,
+      message: 'Server error'
+    })
+  }
 }
 
 
