@@ -42,7 +42,7 @@ app.get('/gestura/userStats/:userId', getUserStats)
 
 
 app.delete('/gestura/user/:userId', deleteUser)
-app.delete('/gestura/userStats/:userId', deleteUserStats)
+app.delete('/gestura/userStats/:userId', deleteUser)
 
  
 async function startServer() {
