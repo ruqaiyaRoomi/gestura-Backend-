@@ -50,6 +50,7 @@ app.delete('/gestura/userStats/:userId', deleteUser)
 
 app.put('/gestura/user/:userId', updateUser)
 
+let db;
  
 async function startServer() {
   try {
@@ -361,12 +362,15 @@ async function updateUser(request, response) {
   const {firstName, lastName, email} = request.body
   try {
     const collection = db.collection('userInfo')
+
     await collection.updateOne(
       {_id: new ObjectID(userId)},
       {$set: {firstName, lastName, email}}
     )
+
     response.json({updated: true})
-  }catch {
+
+  } catch (err) {
     console.error('Error updating user', err)
     response.status(500).json({updated: false})
   }
