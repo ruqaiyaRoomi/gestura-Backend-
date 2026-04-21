@@ -363,12 +363,23 @@ async function updateUser(request, response) {
   try {
     const collection = db.collection('userInfo')
 
-    await collection.updateOne(
+    if(!ObjectId.isValid(userId)){
+      return response.status(400).json({
+        updated: false,
+        messags: "Invalid userId"
+      })
+    }
+    
+
+    const result = await collection.updateOne(
       {_id: new ObjectId(userId)},
       {$set: {firstName, lastName, email}}
     )
 
-    response.json({updated: true})
+    return response.json({updated: true,
+      matched: result.matchedCount,
+      modified: result.modifiedCount
+    })
 
   } catch (err) {
     console.error('Error updating user', err)
