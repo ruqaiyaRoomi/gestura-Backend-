@@ -1,6 +1,6 @@
 const express = require("express");
 const MongoClient = require("mongodb").MongoClient;
-const ObjectID = require("mongodb").ObjectID;
+const ObjectId = require("mongodb")
 var fs = require("fs");
 const {spawn} = require("child_process")
 const cors = require('cors')
@@ -364,7 +364,7 @@ async function updateUser(request, response) {
     const collection = db.collection('userInfo')
 
     await collection.updateOne(
-      {_id: new ObjectID(userId)},
+      {_id: new ObjectId(userId)},
       {$set: {firstName, lastName, email}}
     )
 
