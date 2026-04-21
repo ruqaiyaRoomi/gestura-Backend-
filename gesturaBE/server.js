@@ -44,6 +44,8 @@ app.get('/gestura/userStats/:userId', getUserStats)
 app.delete('/gestura/user/:userId', deleteUser)
 app.delete('/gestura/userStats/:userId', deleteUser)
 
+app.put('/gestura/user/:userId', updateUser)
+
  
 async function startServer() {
   try {
@@ -349,3 +351,19 @@ async function prediction(request, response) {
   
 }
 
+
+async function updateUser(request, response) {
+  const {userId} = request.params
+  const {firstName, lastName, email} = request.body
+  try {
+    const collection = db.collection('userInfo')
+    await collection.updateOne(
+      {_id: new ObjectID(userId)},
+      {$set: {firstName, lastName, email}}
+    )
+    response.json({updated: true})
+  }catch {
+    console.error('Error updating user', err)
+    response.status(500).json({updated: false})
+  }
+}
