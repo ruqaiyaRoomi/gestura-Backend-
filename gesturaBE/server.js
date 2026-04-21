@@ -1,6 +1,6 @@
 const express = require("express");
 const MongoClient = require("mongodb").MongoClient;
-const ObjectId = require("mongodb")
+const ObjectId = require("mongodb").ObjectId
 var fs = require("fs");
 const {spawn} = require("child_process")
 const cors = require('cors')
