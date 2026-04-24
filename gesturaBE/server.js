@@ -1,10 +1,7 @@
 const express = require("express");
 const MongoClient = require("mongodb").MongoClient;
 const ObjectId = require("mongodb").ObjectId
-var fs = require("fs");
 const {spawn} = require("child_process")
-const cors = require('cors')
-var path = require("path");
 
 const app = express()
 app.set("port", 3000);
@@ -336,9 +333,6 @@ pythonProcess.stdout.on('data', (data) => {
 pythonProcess.stderr.on('data', (data) => {
   console.error('Python error: ', data.toString())
 })
-
-const queue = []
-let isProcessing = false
 
 // send landmark data to the python process and wait for a predicition response
 function predictLandmarks(landmarks, is_left) {
