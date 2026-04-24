@@ -288,7 +288,7 @@ async function deleteUser(request, response) {
     const statsCollection = db.collection('userStats')
     const quizCollection = db.collection('quizHistory')
 
-    await userCollection.deleteOne({_id: new ObjectID(userId)})
+    await userCollection.deleteOne({_id: new ObjectId(userId)})
     await statsCollection.deleteOne({userId})
     await quizCollection.deleteMany({userId})
 
