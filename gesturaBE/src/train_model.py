@@ -10,16 +10,17 @@ from tensorflow.keras import layers,models
 import os
 import matplotlib.pyplot as plt
 
-os.makedirs("model", exist_ok=True)
+# Create model output directly if it doesn't exist
+os.makedirs("../model", exist_ok=True)
 
-
-
+# Initialise ClearML task for experiment tracking
 task = Task.init(project_name="<Gestura_UG_Project>", task_name="<landmark_ML_experiment>")
 
-
-data = pd.read_csv("data/landmarks_merged.csv", low_memory=False)
+# Load merged landmark dataset
+data = pd.read_csv("../data/landmarks_merged.csv", low_memory=False)
 le = LabelEncoder()
 
+# Seperate features and label
 x = data.drop("label", axis= 1)
 x = x.apply(pd.to_numeric, errors= 'coerce')
 x = x.fillna(0).values.astype(np.float32)
@@ -33,7 +34,8 @@ y_encoded = le.fit_transform(y)
 print(f"Classes", y_encoded)
 print(le.classes_)
 
-np.save("model/classes.npy", le.classes_)
+#  Save class label so they can be loaded at inference time
+np.save("../model/classes.npy", le.classes_)
 
 
 # train split
@@ -72,13 +74,14 @@ print("Max: ", x_train.max())
 num_classes = len(le.classes_)
 print(num_classes)
 
-# training the data with tensorflow
+# define a 3-layer dense network, input match 63 landmark features (21 point x xyz)
 model = models.Sequential([
     layers.Dense(128, activation='relu', input_shape=(63,)),
     layers.Dense(64, activation='relu'),
     layers.Dense(num_classes, activation='softmax')
 ])
 
+# adam optimiser with sparse categorical crossentropy for integer-encoded labels
 model.compile(
     optimizer = 'adam',
     loss= 'sparse_categorical_crossentropy',
@@ -87,6 +90,7 @@ model.compile(
 
 model.summary()
 
+# train for 15 epochs with validation tracked each epoch
 history = model.fit(
     x_train, y_train, 
     validation_data=(x_test, y_test),
@@ -94,6 +98,7 @@ history = model.fit(
     batch_size=32
 )
 
+# Evaluate final performance on held-out test set
 loss,accuracy = model.evaluate(x_test, y_test)
 print("Test Accuracy: ," , accuracy)
 
@@ -103,17 +108,19 @@ y_true = y_test
 
 print(classification_report(y_true, y_pred_classes))
 
-cm =  confusion_matrix(y_true, y_pred_classes)
 
+# plot and save confusion matrix
+cm =  confusion_matrix(y_true, y_pred_classes)
 plt.figure(figsize=(16,14))
 sns.heatmap(cm, annot=True, fmt='d' ,cmap="Blues", xticklabels=le.classes_, yticklabels=le.classes_)
 plt.xlabel("Predicted")
 plt.ylabel("Actual")
 plt.title("Confusion Matrix")
 plt.tight_layout()
-plt.savefig("model/confusion_matirx.png", dpi=150)
+plt.savefig("../model/confusion_matirx.png", dpi=150)
 plt.close()
 
+# plot and save training accuracy curve
 plt.figure()
 plt.plot(history.history['accuracy'], label='Train Accuracy')
 plt.plot(history.history['val_accuracy'], label='Validation Accuracy')
@@ -122,13 +129,15 @@ plt.xlabel('Epoch')
 plt.ylabel('Accuracy')
 plt.legend()
 plt.tight_layout()
-plt.savefig("model/training_accuracy.png", dpi=150)
+plt.savefig("../model/training_accuracy.png", dpi=150)
 plt.close()
 
 
+# Save classification report as text file
 report = classification_report(y_true, y_pred_classes, target_names=le.classes_)
-with open("model/classification_report.txt", "w") as f:
+with open("../model/classification_report.txt", "w") as f:
     f.write(report)
 print(report)
 
-model.save("model/asl_model.h5")
+# save trained model
+model.save("../model/asl_model.h5")
