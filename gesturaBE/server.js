@@ -9,7 +9,7 @@ var path = require("path");
 const app = express()
 app.set("port", 3000);
 
-
+// allow cors request from the frontend
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*")
   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization")
@@ -20,8 +20,10 @@ app.use((req, res, next) => {
   next()
 })
 
+// parse incoming JSON request bodies
 app.use(express.json())
 
+// spawn the python predictions process once on server start, kept to avoid cold start delays
 const pythonProcess = spawn('python3' , ['src/predict_api.py'])
 let pendingResolve = null
 
@@ -29,29 +31,29 @@ let pendingResolve = null
 const uri = "mongodb+srv://ruqaiyah:RR1026@ug.9ogfhhl.mongodb.net/?appName=UG";
 const client = new MongoClient(uri);
 
-
+// auth routes
 app.post('/gestura/signUp', SignUp)
-
 app.post("/gestura/login", login); 
 
+// quiz routes
 app.post('/gestura/quizHistory', saveQuizHistory);
-
 app.get('/gestura/quizHistory', getHistory)
 
+// prediction routes
 app.post('/gestura/predict', prediction)
 
-
+// user stats routes
 app.post('/gestura/userStats', postUserStats)
 app.get('/gestura/userStats/:userId', getUserStats)
 
-
+// account management routes
 app.delete('/gestura/user/:userId', deleteUser)
 app.delete('/gestura/userStats/:userId', deleteUser)
-
 app.put('/gestura/user/:userId', updateUser)
 
 let db;
  
+// connect to MongoDB then start the server
 async function startServer() {
   try {
     await client.connect();
@@ -91,7 +93,7 @@ async function SignUp(request, response) {
               });
           }
 
-        
+        // check if email is already registered
           const user = await collection.findOne({
               $or: [{ email: userInfo.email }],
           }); 
@@ -126,6 +128,7 @@ async function SignUp(request, response) {
     }
 }
 
+// log in an existing user
 async function login(request, response) {
    let collection = db.collection("userInfo")
     let userInfo = request.body;
@@ -157,7 +160,7 @@ async function login(request, response) {
     }
 }
 
-
+// save completed quiz attempt to quizHistory collection
 async function saveQuizHistory(request, response) {
    let collection = db.collection('quizHistory')
     
@@ -190,6 +193,7 @@ async function saveQuizHistory(request, response) {
     }
 }
 
+// save or update a user's module progress
 async function postUserStats(request, response) {
   const collection = db.collection('userStats');
   const { userId, module, letter, word} = request.body
@@ -207,6 +211,7 @@ async function postUserStats(request, response) {
     let userStats = await collection.findOne({userId})
 
     if(!userStats) {
+      // no existing record
       const newModules = {};
 
       newModules[module] = value ? [value] : []
@@ -230,8 +235,8 @@ async function postUserStats(request, response) {
     if(!userStats.modules[module])
       userStats.modules[module] = []
 
+    // only add the value if it hasn't been completed before
     let updated = false
-
     if(value && !userStats.modules[module].includes(value)) {
       userStats.modules[module].push(value)
       updated = true
@@ -259,6 +264,7 @@ async function postUserStats(request, response) {
 }
 }
 
+// fecth progress stats for a specific user
 async function getUserStats(request, response) {
   const {userId} = request.params;
   const collection = db.collection('userStats');
@@ -276,6 +282,7 @@ async function getUserStats(request, response) {
   
 }
 
+// delete a user account along with their stats and quiz history
 async function deleteUser(request, response) {
   const {userId} = request.params
 
@@ -301,7 +308,7 @@ async function deleteUser(request, response) {
   }
 }
 
-
+// fetch all quiz attempts for a given user
 async function getHistory(request, response) {
   let collection = db.collection('quizHistory')
     try {
@@ -314,7 +321,7 @@ async function getHistory(request, response) {
     }
 }
 
-
+// handle stdout from the python process, resolves, the pending prediction promise
 pythonProcess.stdout.on('data', (data) => {
   if(pendingResolve) {
     try{
@@ -333,12 +340,14 @@ pythonProcess.stderr.on('data', (data) => {
 const queue = []
 let isProcessing = false
 
+// send landmark data to the python process and wait for a predicition response
 function predictLandmarks(landmarks, is_left) {
   return new Promise((resolve) => {
     pendingResolve = resolve
     pythonProcess.stdin.write(JSON.stringify({ landmarks, is_left}) + '\n')
   })
 }
+
 
 async function prediction(request, response) {
 
@@ -356,7 +365,7 @@ async function prediction(request, response) {
   
 }
 
-
+// update a user's profile details
 async function updateUser(request, response) {
   const {userId} = request.params
   const {firstName, lastName, email} = request.body
