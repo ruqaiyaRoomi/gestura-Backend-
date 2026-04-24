@@ -1,6 +1,5 @@
 const express = require("express");
 const MongoClient = require("mongodb").MongoClient;
-const ObjectId = require("mongodb").ObjectId
 const {spawn} = require("child_process");
 const { ObjectId } = require("mongodb");
 
@@ -288,8 +287,6 @@ async function deleteUser(request, response) {
     const userCollection = db.collection('userInfo')
     const statsCollection = db.collection('userStats')
     const quizCollection = db.collection('quizHistory')
-
-    const ObjectId = new ObjectId(userId)
 
     await userCollection.deleteOne({_id: new ObjectID(userId)})
     await statsCollection.deleteOne({userId})
